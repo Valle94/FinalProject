@@ -71,12 +71,16 @@ public class CreateTrack : MonoBehaviour
             {
                 Debug.Log(gameObject.ToString());
             }
+            RaceManager.Instance.checkpoints.RemoveAt(RaceManager.Instance.checkpoints.Count -1);
             Debug.Log("InvalidPiece");
             return; // INVALID — OVERLAP DETECTED
         }
 
         // 4. Accept piece
         CreatedPieces.Add(newPiece);
+
+        newPiece.GetComponent<TrackPiece>().Checkpoint.checkpointIndex = CreatedPieces.IndexOf(lastPiece);
+        RaceManager.Instance.checkpoints.Add(newPiece.GetComponent<TrackPiece>().Checkpoint);
     }
 
     public void OnInteract()
@@ -113,6 +117,7 @@ public class CreateTrack : MonoBehaviour
             {
                 Destroy(CreatedPieces.Last());
                 CreatedPieces.Remove(CreatedPieces.Last());
+                RaceManager.Instance.checkpoints.RemoveAt(RaceManager.Instance.checkpoints.Count -1);
             }
             Debug.Log("InvalidPiece");
             return; // INVALID — OVERLAP DETECTED
@@ -120,6 +125,8 @@ public class CreateTrack : MonoBehaviour
 
         // 4. Accept piece
         CreatedPieces.Add(newPiece);
+        newPiece.GetComponent<TrackPiece>().Checkpoint.checkpointIndex = CreatedPieces.IndexOf(lastPiece);
+        RaceManager.Instance.checkpoints.Add(newPiece.GetComponent<TrackPiece>().Checkpoint);
     }
 
     private bool IsOverlapping(TrackPiece newTrack)

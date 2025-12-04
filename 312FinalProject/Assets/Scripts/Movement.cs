@@ -34,8 +34,12 @@ public class Movement : MonoBehaviour
 
     void Update()
     {
-        Debug.Log(movement.x);
-        Debug.Log(movement.y);
+        if (!RaceManager.Instance.raceStarted && isGrounded)
+        {
+            RaceManager.Instance.StartRace();
+        }
+        //Debug.Log(movement.x);
+        //Debug.Log(movement.y);
     }
 
     void FixedUpdate()
