@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class CreateTrack : MonoBehaviour
 {
+    public static CreateTrack Instance;
+
     [Range(10, 300)] public int trackLength = 10;
     [SerializeField] GameObject startPiece;
     [SerializeField] GameObject endPiece;
@@ -14,15 +16,27 @@ public class CreateTrack : MonoBehaviour
     List<GameObject> CreatedPieces = new List<GameObject>();
     private HashSet<Vector3Int> occupiedCells = new HashSet<Vector3Int>();
 
+    private void Awake() 
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        } 
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     void Start()
     {
-        StartCoroutine(BuildTrack());
+        // StartCoroutine(BuildTrack());
         // Instantiate(player, transform.position, Quaternion.identity);
     }
 
-    private IEnumerator BuildTrack()
+    public IEnumerator BuildTrack(int diffulty)
     {
+        trackLength = 10 * diffulty;
         SpawnStart();
         yield return null;
 
@@ -32,6 +46,18 @@ public class CreateTrack : MonoBehaviour
             yield return null;
         }
         SpawnEnd();
+    }
+
+    public void ClearTrack()
+    {
+        foreach (GameObject piece in CreatedPieces)
+            Destroy(piece);
+
+        CreatedPieces.Clear();
+        occupiedCells.Clear();
+
+        // Also wipe checkpoints from RaceManager
+        RaceManager.Instance.checkpoints.Clear();
     }
 
     private void SpawnStart()
@@ -170,6 +196,7 @@ public class CreateTrack : MonoBehaviour
         Destroy(CreatedPieces.Last());
         CreatedPieces.RemoveAt(CreatedPieces.Count - 1);
     }
+
     private Vector3Int QuantizePosition(Vector3 pos)
     {
         return new Vector3Int(

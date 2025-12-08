@@ -22,28 +22,36 @@ public class Movement : MonoBehaviour
     [SerializeField] private float dragCoefficient = 1f;
 
     private int[] wheelsIsGrounded = new int[4];
-    private bool isGrounded = false;
+    [HideInInspector] public bool isGrounded = false;
     private Vector2 movement;
     private Vector3 currentCarLocalVelocity = Vector3.zero;
     private float carVelocityRatio;
+    private Vector3 startPos;
+    private Quaternion startRotation;
+
+    void Awake()
+    {
+        startPos = transform.position;
+        startRotation = transform.rotation;
+    }
 
     void Start()
     {
         carRB = GetComponent<Rigidbody>();
+        carRB.isKinematic = true;
     }
 
     void Update()
     {
-        if (!RaceManager.Instance.raceStarted && isGrounded)
-        {
-            RaceManager.Instance.StartRace();
-        }
         //Debug.Log(movement.x);
         //Debug.Log(movement.y);
     }
 
     void FixedUpdate()
     {
+        if (!RaceManager.Instance.raceStarted)
+        return;
+
         Suspension();
         GroundCheck();
         CalculateCarVelocity();
@@ -52,7 +60,36 @@ public class Movement : MonoBehaviour
 
     public void OnMove(InputValue value)
     {
-        movement = value.Get<Vector2>();
+        if (RaceManager.Instance.raceStarted)
+        {
+            movement = value.Get<Vector2>();    
+        }
+        else
+        {
+            movement = Vector2.zero;
+        }
+    }
+
+    public void ResetPlayer()
+    {
+        transform.position = startPos;
+        transform.rotation = startRotation;
+
+        carRB.linearVelocity = Vector3.zero;
+        carRB.angularVelocity = Vector3.zero;
+    }
+
+    public void StartPlayer()
+    {
+        carRB.isKinematic = false;
+    }
+
+    public void StopPlayer()
+    {
+        // Freeze physics so the car doesn't move or fall during menus
+        carRB.linearVelocity = Vector3.zero;
+        carRB.angularVelocity = Vector3.zero;
+        carRB.isKinematic = true;
     }
 
     private void CalculateCarVelocity()
@@ -158,48 +195,4 @@ public class Movement : MonoBehaviour
         }
     }
 
-    // if (rayDidHit)
-    //         {
-    //             float currentSpringLength = hit.distance - wheelRadius;
-    //             float springCompression = (restLength - currentSpringLength) / springTravel;
-
-    //             float springVelocity = Vector3.Dot(carRB.GetPointVelocity(rayPoint.position), rayPoint.up);
-    //             float dampForce = damperStiffness * springVelocity;
-
-    //             float springForce = springStiffness * springCompression;
-
-    //             float netForce = springForce - dampForce;
-
-    //             carRB.AddForceAtPosition(netForce * rayPoint.up, rayPoint.position);
-
-    //             Debug.DrawLine(rayPoint.position, hit.point, Color.red);
-    //         }
-    //         else
-    //         {
-    //             Debug.DrawLine(rayPoint.position, rayPoint.position + (wheelRadius + maxLength) * -rayPoint.up, Color.green);
-    //         }
-
-    // // Suspension spring force
-    // if (rayDidHit)
-    // {
-    //     // world-space direction of the spring force.
-    //     Vector3 springDir = tireTransform.up;
-        
-    //     // world-space velocity of this tire
-    //     Vector3 tireWorldVel = carRigidBody.GetPointVelocity(tireTransform.position);
-
-    //     // calculate offset from the raycast
-    //     float offset = suspenstionRestDist - tireRay.distance;
-
-    //     // calculate the velocity along the spring direction
-    //     // note that springDir is a unit vector, so this returns the magnitude of tireWorldVel
-    //     // as projected onto springDir
-    //     float vel = Vector3.Dot(springDir, tireWorldVel);
-
-    //     // calculate the magnitude of the dampened spring force
-    //     float force = (offset * springStrength) - (Vector2Lerp * springDamper);
-
-    //     // apply the force at the location of this tire, in the direction of the suspension.
-    //     carRigidBody.AddForceAtPosition(springDir * force, tireTransform.position)
-    // }
 }

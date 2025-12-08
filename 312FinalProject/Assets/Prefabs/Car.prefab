@@ -295,7 +295,7 @@ GameObject:
   - component: {fileID: 2380512843966077400}
   m_Layer: 3
   m_Name: Car
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -364,8 +364,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2, y: 0.5, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 2.5082443, y: 0.82639706, z: 4.023392}
+  m_Center: {x: -0, y: 0, z: 0}
 --- !u!114 &7114585172613885148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -389,7 +389,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   springStiffness: 30000
-  damperStiffness: 1000
+  damperStiffness: 2000
   restLength: 1
   springTravel: 0.5
   wheelRadius: 0.33
@@ -440,6 +440,7 @@ MonoBehaviour:
     m_PostInfinity: 0
     m_RotationOrder: 4
   dragCoefficient: 1.2
+  isGrounded: 0
 --- !u!114 &2380512843966077400
 MonoBehaviour:
   m_ObjectHideFlags: 0
